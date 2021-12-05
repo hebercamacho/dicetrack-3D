@@ -47,7 +47,7 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
 }
 
 void OpenGLWindow::initializeGL() {
-  abcg::glClearColor(0, 0, 0, 1);
+  abcg::glClearColor(0, 0.392156f, 0, 1);
   abcg::glEnable(GL_DEPTH_TEST);
 
   // Create programs
