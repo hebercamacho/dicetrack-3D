@@ -21,7 +21,7 @@ struct hash<Vertex> {
 };
 }  // namespace std
 
-void Model::computeNormals() {
+void Dices::computeNormals() {
   // Clear previous vertex normals
   for (auto& vertex : m_vertices) {
     vertex.normal = glm::zero<glm::vec3>();
@@ -53,7 +53,7 @@ void Model::computeNormals() {
   m_hasNormals = true;
 }
 
-void Model::createBuffers() {
+void Dices::createBuffers() {
   // Delete previous buffers
   abcg::glDeleteBuffers(1, &m_EBO);
   abcg::glDeleteBuffers(1, &m_VBO);
@@ -74,14 +74,14 @@ void Model::createBuffers() {
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Model::loadDiffuseTexture(std::string_view path) {
+void Dices::loadDiffuseTexture(std::string_view path) {
   if (!std::filesystem::exists(path)) return;
 
   abcg::glDeleteTextures(1, &m_diffuseTexture);
   m_diffuseTexture = abcg::opengl::loadTexture(path);
 }
 
-void Model::loadObj(std::string_view path, bool standardize) {
+void Dices::loadObj(std::string_view path, bool standardize) {
   const auto basePath{std::filesystem::path{path}.parent_path().string() + "/"};
 
   tinyobj::ObjReaderConfig readerConfig;
@@ -198,7 +198,7 @@ void Model::loadObj(std::string_view path, bool standardize) {
   createBuffers();
 }
 
-void Model::render(int numTriangles) const {
+void Dices::render(int numTriangles) const {
   abcg::glBindVertexArray(m_VAO);
 
   abcg::glActiveTexture(GL_TEXTURE0);
@@ -221,7 +221,7 @@ void Model::render(int numTriangles) const {
   abcg::glBindVertexArray(0);
 }
 
-void Model::setupVAO(GLuint program) {
+void Dices::setupVAO(GLuint program) {
   // Release previous VAO
   abcg::glDeleteVertexArrays(1, &m_VAO);
 
@@ -303,7 +303,7 @@ void Model::setupVAO(GLuint program) {
   abcg::glBindVertexArray(0);
 }
 
-void Model::standardize() {
+void Dices::standardize() {
   // Center to origin and normalize largest bound to [-1, 1]
 
   // Get bounds
@@ -326,7 +326,7 @@ void Model::standardize() {
   }
 }
 
-void Model::terminateGL() {
+void Dices::terminateGL() {
   abcg::glDeleteTextures(1, &m_diffuseTexture);
   abcg::glDeleteBuffers(1, &m_EBO);
   abcg::glDeleteBuffers(1, &m_VBO);

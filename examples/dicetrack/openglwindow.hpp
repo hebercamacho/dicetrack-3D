@@ -18,7 +18,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   int m_viewportWidth{};
   int m_viewportHeight{};
 
-  Model m_model;
+  Dices m_model;
   int m_trianglesToDraw{};
 
   TrackBall m_trackBallModel;

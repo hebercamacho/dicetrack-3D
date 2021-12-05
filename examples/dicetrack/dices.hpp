@@ -25,7 +25,7 @@ struct Vertex {
   }
 };
 
-class Model {
+class Dices {
  public:
   void loadDiffuseTexture(std::string_view path);
   void loadObj(std::string_view path, bool standardize = true);
