@@ -26,6 +26,15 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
   if (event.type == SDL_MOUSEBUTTONUP) {
     if (event.button.button == SDL_BUTTON_LEFT) {
       m_trackBallModel.mouseRelease(mousePosition);
+      //fmt::print("mouse position: {} {}\n", mousePosition.x * (2.0f/m_viewportWidth) - 1, mousePosition.y * (-2.0f/m_viewportHeight) + 1);
+      for(auto &dice : m_dices.dices){
+        const auto P = m_projMatrix * (m_viewMatrix * m_modelMatrix * glm::vec4(dice.position, 1.0));
+        const auto distanceX = glm::distance((mousePosition.x * (2.0f/m_viewportWidth) - 1), P.x / P.z);
+        const auto distanceY = glm::distance((mousePosition.y * (-2.0f/m_viewportHeight) + 1), P.y / P.z);
+        //fmt::print("distance: {} {}\n", distanceX, distanceY);
+        if(distanceX <= (0.4f / P.z) && distanceY < (0.8f / P.z)) //números empíricos
+          m_dices.jogarDado(dice);
+      }
     }
     if (event.button.button == SDL_BUTTON_RIGHT) {
       m_trackBallLight.mouseRelease(mousePosition);
