@@ -2,7 +2,7 @@
 
 #include <fmt/core.h>
 #include <tiny_obj_loader.h>
-
+#include <glm/gtx/fast_trigonometry.hpp>
 #include <cppitertools/itertools.hpp>
 #include <filesystem>
 #include <glm/gtx/hash.hpp>
@@ -44,6 +44,47 @@ Dice Dices::inicializarDado() {
   //jogarDado(dice); //começar com o dado sendo jogado 
 
   return dice;
+}
+
+void Dices::jogarDado(Dice &dice) {
+  tempoGirandoAleatorio(dice);
+  eixoAlvoAleatorio(dice);
+  dice.dadoGirando = true;
+}
+
+void Dices::update(float deltaTime) {
+  for(auto &dice : dices) {
+    //se o dado ainda estiver girando, vamos decrementar do tempo dele
+    if(dice.dadoGirando)
+    {
+      dice.timeLeft -= deltaTime;
+      if(dice.DoRotateAxis.x)
+        dice.rotationAngle.x = glm::wrapAngle(dice.rotationAngle.x + glm::radians(dice.spinSpeed) * dice.timeLeft); //definição da velocidade de rotação, grau por quadro
+      if(dice.DoRotateAxis.y)
+        dice.rotationAngle.y = glm::wrapAngle(dice.rotationAngle.y + glm::radians(dice.spinSpeed) * dice.timeLeft); //definição da velocidade de rotação, grau por quadro
+      if(dice.DoRotateAxis.z)
+        dice.rotationAngle.z = glm::wrapAngle(dice.rotationAngle.z + glm::radians(dice.spinSpeed) * dice.timeLeft); //definição da velocidade de rotação, grau por quadro
+      // fmt::print("dice.rotationAngle: {}\n", dice.rotationAngle);
+    }
+    //se o tempo acabou, dado não está mais girando
+    if(dice.dadoGirando && dice.timeLeft <= 0){
+      dice.dadoGirando = false;
+    }
+  }
+}
+
+//função para definir tempo de giro do dado, algo entre 2 e 7 segundos 
+void Dices::tempoGirandoAleatorio(Dice &dice){
+  std::uniform_real_distribution<float> fdist(2.0f,7.0f);
+  dice.timeLeft = fdist(m_randomEngine);
+}
+
+//função para definir um eixo de rotação aleatório para cada dado, considerando a partir do eixo atual
+void Dices::eixoAlvoAleatorio(Dice &dice){
+  //distribuição aleatória entre 0 e 2, para girar somente 1 eixo
+  dice.DoRotateAxis = {0, 0, 0};
+  std::uniform_int_distribution<int> idist(0,2);
+  dice.DoRotateAxis[idist(m_randomEngine)] = 1;
 }
 
 void Dices::computeNormals() {

@@ -37,37 +37,21 @@ struct Dice {
 
 class Dices {
  public:
-   void initializeGL(int quantity);
+  void initializeGL(int quantity);
   void loadDiffuseTexture(std::string_view path);
   void loadObj(std::string_view path, bool standardize = true);
   void render() const;
   void setupVAO(GLuint program);
   void terminateGL();
-
-  [[nodiscard]] int getNumTriangles() const {
-    return static_cast<int>(m_indices.size()) / 3;
-  }
+  void update(float deltaTime);
 
   std::vector<Dice> dices;
-
-  [[nodiscard]] glm::vec4 getKa() const { return m_Ka; }
-  [[nodiscard]] glm::vec4 getKd() const { return m_Kd; }
-  [[nodiscard]] glm::vec4 getKs() const { return m_Ks; }
-  [[nodiscard]] float getShininess() const { return m_shininess; }
-
-  [[nodiscard]] bool isUVMapped() const { return m_hasTexCoords; }
-
-  [[nodiscard]] GLuint getDiffuseTexture() const { return m_diffuseTexture; }
 
  private:
   GLuint m_VAO{};
   GLuint m_VBO{};
   GLuint m_EBO{};
 
-  glm::vec4 m_Ka;
-  glm::vec4 m_Kd;
-  glm::vec4 m_Ks;
-  float m_shininess;
   GLuint m_diffuseTexture{};
 
   std::default_random_engine m_randomEngine; //gerador de números pseudo-aleatórios
@@ -79,6 +63,9 @@ class Dices {
   bool m_hasTexCoords{false};
 
   Dice inicializarDado();
+  void jogarDado(Dice &);
+  void tempoGirandoAleatorio(Dice&);
+  void eixoAlvoAleatorio(Dice&);
   void computeNormals();
   void createBuffers();
   void standardize();

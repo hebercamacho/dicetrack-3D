@@ -20,7 +20,6 @@ class OpenGLWindow : public abcg::OpenGLWindow {
 
   Dices m_dices;
   int quantity{1}; //number of dices to be initialized
-  int m_trianglesToDraw{};
 
   TrackBall m_trackBallModel;
   TrackBall m_trackBallLight;
@@ -31,8 +30,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   glm::mat4 m_projMatrix{1.0f};
 
   // Shaders
-  std::vector<const char*> m_shaderNames{"texture", "blinnphong", "phong",
-                                         "gouraud", "normal",     "depth"};
+  std::vector<const char*> m_shaderNames{"texture"};
   std::vector<GLuint> m_programs;
   int m_currentProgramIndex{};
 
@@ -45,10 +43,6 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   glm::vec4 m_Ia{0.0f};
   glm::vec4 m_Id{1.0f};
   glm::vec4 m_Is{1.0f};
-  glm::vec4 m_Ka;
-  glm::vec4 m_Kd;
-  glm::vec4 m_Ks;
-  float m_shininess{};
 
   void loadModel(std::string_view path);
   void update();
