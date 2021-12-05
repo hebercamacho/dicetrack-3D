@@ -1,32 +1,32 @@
-# Prerequisites
-*.d
+# Cache/options used by clangd
+.clangd
+.cache
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# IntelliJ IDEA
+.idea
+*.iml
 
-# Precompiled Headers
-*.gch
-*.pch
+# Visual Studio and VS Code
+.vs
+.vscode
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# Build directories
+build
+cmake-build*
 
-# Fortran module files
-*.mod
-*.smod
+# Doxygen documentation
+Dox
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+# Conan imports for imgui
+bindings
 
-# Executables
+# CMake build configuration
+CMakeSettings.json
+compile_commands.json
+
+# Emscripten output
+public/*.data
+public/*.js
+public/*.wasm
+
 *.exe
-*.out
-*.app
