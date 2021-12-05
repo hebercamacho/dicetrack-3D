@@ -126,6 +126,54 @@ void OpenGLWindow::paintGL() {
 void OpenGLWindow::paintUI() {
   abcg::OpenGLWindow::paintUI();
 
+  //Janela de opções
+  {
+    ImGui::SetNextWindowPos(ImVec2(m_viewportWidth / 3, m_viewportHeight - 100));
+    ImGui::SetNextWindowSize(ImVec2(-1, -1));
+    ImGui::Begin("Button window", nullptr, ImGuiWindowFlags_NoDecoration);
+
+    //Botão jogar dado
+    if(ImGui::Button("Jogar todos!")){
+      for(auto &dice : m_dices.dices){
+        m_dices.jogarDado(dice);
+      }
+    }
+    // Number of dices combo box
+    {
+      static std::size_t currentIndex{};
+      const std::vector<std::string> comboItems{"1", "2", "3", "4", "5", "6"};
+
+      ImGui::PushItemWidth(70);
+      if (ImGui::BeginCombo("Dados",
+                            comboItems.at(currentIndex).c_str())) {
+        for (const auto index : iter::range(comboItems.size())) {
+          const bool isSelected{currentIndex == index};
+          if (ImGui::Selectable(comboItems.at(index).c_str(), isSelected))
+            currentIndex = index;
+          if (isSelected) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+      }
+      ImGui::PopItemWidth();
+      if(quantity != (int)currentIndex + 1){ //se mudou
+        quantity = currentIndex + 1;
+        m_dices.initializeGL(quantity);
+      }
+    }
+    //Speed Slider 
+    {
+      ImGui::PushItemWidth(m_viewportWidth / 3);
+      static float spinSpeed{1.0f};
+      ImGui::SliderFloat("Speed", &spinSpeed, 0.01f, 10.0f,
+                       "%1f Degrees");
+      for(auto &dice : m_dices.dices){
+        dice.spinSpeed = spinSpeed;
+      }
+      ImGui::PopItemWidth();
+    }
+
+    ImGui::End();
+  }
 }
 
 void OpenGLWindow::resizeGL(int width, int height) {

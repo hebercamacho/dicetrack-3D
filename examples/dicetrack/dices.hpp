@@ -44,6 +44,7 @@ class Dices {
   void setupVAO(GLuint program);
   void terminateGL();
   void update(float deltaTime);
+  void jogarDado(Dice &);
 
   std::vector<Dice> dices;
 
@@ -63,7 +64,6 @@ class Dices {
   bool m_hasTexCoords{false};
 
   Dice inicializarDado();
-  void jogarDado(Dice &);
   void tempoGirandoAleatorio(Dice&);
   void eixoAlvoAleatorio(Dice&);
   void computeNormals();
