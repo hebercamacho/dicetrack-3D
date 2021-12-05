@@ -21,6 +21,31 @@ struct hash<Vertex> {
 };
 }  // namespace std
 
+void Dices::initializeGL(int quantity){
+  // Inicializar gerador de números pseudo-aleatórios
+  auto seed{std::chrono::steady_clock::now().time_since_epoch().count()};
+  m_randomEngine.seed(seed);
+
+  dices.clear();
+  dices.resize(quantity);
+
+  for(auto &dice : dices) {
+    dice = inicializarDado();
+  }
+}
+
+//função para começar o dado numa posição e número aleatório, além de inicializar algumas outras variáveis necessárias
+Dice Dices::inicializarDado() {
+  Dice dice;
+  //define posição inicial completamente aleatória
+  std::uniform_real_distribution<float> fdist(-1.0f,1.0f);
+  dice.position = glm::vec3{fdist(m_randomEngine),fdist(m_randomEngine),fdist(m_randomEngine)};
+
+  //jogarDado(dice); //começar com o dado sendo jogado 
+
+  return dice;
+}
+
 void Dices::computeNormals() {
   // Clear previous vertex normals
   for (auto& vertex : m_vertices) {
@@ -198,7 +223,7 @@ void Dices::loadObj(std::string_view path, bool standardize) {
   createBuffers();
 }
 
-void Dices::render(int numTriangles) const {
+void Dices::render() const {
   abcg::glBindVertexArray(m_VAO);
 
   abcg::glActiveTexture(GL_TEXTURE0);
@@ -212,10 +237,7 @@ void Dices::render(int numTriangles) const {
   abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  const auto numIndices{(numTriangles < 0) ? m_indices.size()
-                                           : numTriangles * 3};
-
-  abcg::glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numIndices),
+  abcg::glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()),
                        GL_UNSIGNED_INT, nullptr);
 
   abcg::glBindVertexArray(0);

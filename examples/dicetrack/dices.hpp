@@ -2,7 +2,7 @@
 #define DICES_HPP_
 
 #include <vector>
-
+#include <random>
 #include "abcg.hpp"
 
 struct Vertex {
@@ -25,11 +25,22 @@ struct Vertex {
   }
 };
 
+struct Dice {
+  glm::mat4 modelMatrix{1.0f}; //a matriz do modelo do dado
+  glm::vec3 position{0.0f}; //indica a posição tridimensional
+  glm::vec3 rotationAngle{}; //indica o ângulo de rotação sobre cada um dos eixos X,Y,Z
+  float timeLeft{0.0f}; //indica por quanto tempo o dado ainda continuará girando
+  float spinSpeed{1.0f}; //define um ângulo para definir a velocidade do giro do dado
+  bool dadoGirando{false}; //indica se o dado deve estar girando 
+  glm::ivec3 DoRotateAxis{}; //indica se deve ou não girar nos eixos X,Y,Z
+};
+
 class Dices {
  public:
+   void initializeGL(int quantity);
   void loadDiffuseTexture(std::string_view path);
   void loadObj(std::string_view path, bool standardize = true);
-  void render(int numTriangles = -1) const;
+  void render() const;
   void setupVAO(GLuint program);
   void terminateGL();
 
@@ -37,12 +48,16 @@ class Dices {
     return static_cast<int>(m_indices.size()) / 3;
   }
 
+  std::vector<Dice> dices;
+
   [[nodiscard]] glm::vec4 getKa() const { return m_Ka; }
   [[nodiscard]] glm::vec4 getKd() const { return m_Kd; }
   [[nodiscard]] glm::vec4 getKs() const { return m_Ks; }
   [[nodiscard]] float getShininess() const { return m_shininess; }
 
   [[nodiscard]] bool isUVMapped() const { return m_hasTexCoords; }
+
+  [[nodiscard]] GLuint getDiffuseTexture() const { return m_diffuseTexture; }
 
  private:
   GLuint m_VAO{};
@@ -55,12 +70,15 @@ class Dices {
   float m_shininess;
   GLuint m_diffuseTexture{};
 
+  std::default_random_engine m_randomEngine; //gerador de números pseudo-aleatórios
+
   std::vector<Vertex> m_vertices;
   std::vector<GLuint> m_indices;
 
   bool m_hasNormals{false};
   bool m_hasTexCoords{false};
 
+  Dice inicializarDado();
   void computeNormals();
   void createBuffers();
   void standardize();

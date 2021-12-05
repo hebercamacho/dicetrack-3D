@@ -18,7 +18,8 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   int m_viewportWidth{};
   int m_viewportHeight{};
 
-  Dices m_model;
+  Dices m_dices;
+  int quantity{1}; //number of dices to be initialized
   int m_trianglesToDraw{};
 
   TrackBall m_trackBallModel;
