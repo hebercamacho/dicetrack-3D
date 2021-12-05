@@ -6,13 +6,14 @@ in vec3 fragV;
 in vec2 fragTexCoord;
 in vec3 fragPObj;
 in vec3 fragNObj;
+// Material properties
+in vec4 Ka;
+in vec4 Kd;
+in vec4 Ks;
+in float shininess;
 
 // Light properties
 uniform vec4 Ia, Id, Is;
-
-// Material properties
-uniform vec4 Ka, Kd, Ks;
-uniform float shininess;
 
 // Diffuse texture sampler
 uniform sampler2D diffuseTex;

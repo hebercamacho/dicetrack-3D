@@ -2,10 +2,8 @@
 #define DICES_HPP_
 
 #include <vector>
-#include <random>
-#include "abcg.hpp"
 
-class OpenGLWindow;
+#include "abcg.hpp"
 
 struct Vertex {
   glm::vec3 position{};
@@ -27,52 +25,45 @@ struct Vertex {
   }
 };
 
-struct Dice {
-  glm::mat4 modelMatrix{1.0f}; //a matriz do modelo do dado
-  glm::vec3 position{0.0f}; //indica a posição tridimensional
-  glm::vec3 rotationAngle{}; //indica o ângulo de rotação sobre cada um dos eixos X,Y,Z
-  float timeLeft{0.0f}; //indica por quanto tempo o dado ainda continuará girando
-  float spinSpeed{1.0f}; //define um ângulo para definir a velocidade do giro do dado
-  bool dadoGirando{false}; //indica se o dado deve estar girando 
-  glm::ivec3 DoRotateAxis{}; //indica se deve ou não girar nos eixos X,Y,Z
-};
-
-class Dices {
+class Model {
  public:
-  void initializeGL(GLuint program, int quantity, std::vector<Vertex> vertices, std::vector<GLuint> indices);
-  void render();
+  void loadDiffuseTexture(std::string_view path);
+  void loadObj(std::string_view path, bool standardize = true);
+  void render(int numTriangles = -1) const;
+  void setupVAO(GLuint program);
   void terminateGL();
-  void update(float deltaTime);
 
   [[nodiscard]] int getNumTriangles() const {
     return static_cast<int>(m_indices.size()) / 3;
   }
 
-  std::vector<Dice> dices;
+  [[nodiscard]] glm::vec4 getKa() const { return m_Ka; }
+  [[nodiscard]] glm::vec4 getKd() const { return m_Kd; }
+  [[nodiscard]] glm::vec4 getKs() const { return m_Ks; }
+  [[nodiscard]] float getShininess() const { return m_shininess; }
+
+  [[nodiscard]] bool isUVMapped() const { return m_hasTexCoords; }
 
  private:
-  friend OpenGLWindow;
-  GLuint m_program{};
   GLuint m_VAO{};
   GLuint m_VBO{};
   GLuint m_EBO{};
+
+  glm::vec4 m_Ka;
+  glm::vec4 m_Kd;
+  glm::vec4 m_Ks;
+  float m_shininess;
+  GLuint m_diffuseTexture{};
 
   std::vector<Vertex> m_vertices;
   std::vector<GLuint> m_indices;
 
   bool m_hasNormals{false};
   bool m_hasTexCoords{false};
-  GLuint m_diffuseTexture{};
-  
-  std::default_random_engine m_randomEngine; //gerador de números pseudo-aleatórios
-  
-  void createBuffers();
-  void setupVAO();
 
-  Dice inicializarDado();
-  void jogarDado(Dice &);
-  void tempoGirandoAleatorio(Dice&);
-  void eixoAlvoAleatorio(Dice&);
+  void computeNormals();
+  void createBuffers();
+  void standardize();
 };
 
 #endif
