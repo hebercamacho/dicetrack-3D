@@ -15,6 +15,8 @@ Para renderização, foi utilizada as biblioteca [ABCg](https://github.com/hbata
 
 [Clique aqui para jogar](https://hebercamacho.github.io/dicetrack-3D/dicetrack)
 
+> Observação: jogue no desktop para uma melhor experiência
+
 ## Técnicas Utilizadas
 - [x] Rotação tridimensional em torno de cada um dos três eixos de forma independente, utilizando a função ``glm::rotate``
 - [x] Translação para qualquer das três direções dentro da janela, utilizando a função ``glm::translate``
@@ -22,7 +24,7 @@ Para renderização, foi utilizada as biblioteca [ABCg](https://github.com/hbata
 - [x] Diferença de propriedades de reflexão entre diferentes materiais, usando arquivo .mtl (Material Template Library)
 - [x] Texturização da superfície do dado, utilizando função ``Dices::loadDiffuseTexture`` com arquivo *laminado-cumaru.jpg* e utilizando **mapeamento planar** no fragment shader
     
-![Textura de madeira laminado cumaru](./assets/maps/laminado-cumaru.jpg?raw=true)
+![Textura de madeira laminado cumaru](./assets/maps/laminado-cumaru.jpg?raw=true) laminado-cumaru.jpg
 
 - [x] Iluminação utilizando **modelo de reflexão de Blinn-Phong**, implementado no fragment shader
 - [x] Utilização da função ``glm::distance`` para checar colisões dos dados com as paredes e entre os dados, evitando sobreposição e criando efeito e cubo invisível
