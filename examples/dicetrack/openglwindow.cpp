@@ -4,7 +4,7 @@
 
 #include <cppitertools/itertools.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
-
+#include <fmt/core.h>
 #include "imfilebrowser.h"
 
 void OpenGLWindow::handleEvent(SDL_Event& event) {
@@ -42,7 +42,8 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
   }
   if (event.type == SDL_MOUSEWHEEL) {
     m_zoom += (event.wheel.y > 0 ? 1.0f : -1.0f) / 5.0f;
-    m_zoom = glm::clamp(m_zoom, -1.5f, 1.0f);
+    m_zoom = glm::clamp(m_zoom, -1.5f, 10.0f);
+    //fmt::print("zoom: {}\n", m_zoom);
   }
 }
 
@@ -150,7 +151,7 @@ void OpenGLWindow::paintUI() {
     // Number of dices combo box
     {
       static std::size_t currentIndex{};
-      const std::vector<std::string> comboItems{"1", "2", "3", "4", "5", "6"};
+      const std::vector<std::string> comboItems{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 
       ImGui::PushItemWidth(70);
       if (ImGui::BeginCombo("Dados",
@@ -174,7 +175,7 @@ void OpenGLWindow::paintUI() {
       ImGui::PushItemWidth(m_viewportWidth / 3);
       static float spinSpeed{1.0f};
       ImGui::SliderFloat("Speed", &spinSpeed, 0.01f, 10.0f,
-                       "%1f Degrees");
+                       "%5.3f Degrees");
       for(auto &dice : m_dices.dices){
         dice.spinSpeed = spinSpeed;
       }
@@ -216,7 +217,7 @@ void OpenGLWindow::update() {
   const auto aspect{static_cast<float>(m_viewportWidth) /
                         static_cast<float>(m_viewportHeight)};
   m_projMatrix =
-      glm::perspective(glm::radians(45.0f), aspect, 0.1f, 5.0f);
+      glm::perspective(glm::radians(45.0f), aspect, 0.1f, 25.0f);
 
   //interior não é invisível
   abcg::glDisable(GL_CULL_FACE);

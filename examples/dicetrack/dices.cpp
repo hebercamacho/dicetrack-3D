@@ -41,7 +41,7 @@ Dice Dices::inicializarDado() {
   std::uniform_real_distribution<float> fdist(-1.0f,1.0f);
   dice.position = glm::vec3{fdist(m_randomEngine),fdist(m_randomEngine),fdist(m_randomEngine)};
 
-  //jogarDado(dice); //começar com o dado sendo jogado 
+  jogarDado(dice); //começar com o dado sendo jogado 
 
   return dice;
 }
@@ -49,6 +49,7 @@ Dice Dices::inicializarDado() {
 void Dices::jogarDado(Dice &dice) {
   tempoGirandoAleatorio(dice);
   eixoAlvoAleatorio(dice);
+  direcaoAleatoria(dice);
   dice.dadoGirando = true;
 }
 
@@ -57,6 +58,8 @@ void Dices::update(float deltaTime) {
     //se o dado ainda estiver girando, vamos decrementar do tempo dele
     if(dice.dadoGirando)
     {
+      checkCollisions(dice);
+      //rotação
       dice.timeLeft -= deltaTime;
       if(dice.DoRotateAxis.x)
         dice.rotationAngle.x = glm::wrapAngle(dice.rotationAngle.x + glm::radians(dice.spinSpeed) * dice.timeLeft); //definição da velocidade de rotação, grau por quadro
@@ -65,6 +68,13 @@ void Dices::update(float deltaTime) {
       if(dice.DoRotateAxis.z)
         dice.rotationAngle.z = glm::wrapAngle(dice.rotationAngle.z + glm::radians(dice.spinSpeed) * dice.timeLeft); //definição da velocidade de rotação, grau por quadro
       // fmt::print("dice.rotationAngle: {}\n", dice.rotationAngle);
+      //translação: -1 pra trás, 1 pra frente, 0 parado
+      if(dice.DoTranslateAxis.x != 0)
+        dice.position.x = dice.position.x + dice.spinSpeed * dice.timeLeft * dice.DoTranslateAxis.x * 0.001f; //definição da velocidade de translação
+      if(dice.DoTranslateAxis.y != 0)
+        dice.position.y = dice.position.y + dice.spinSpeed * dice.timeLeft * dice.DoTranslateAxis.y * 0.001f; //definição da velocidade de translação
+      if(dice.DoTranslateAxis.z != 0)
+        dice.position.z = dice.position.z + dice.spinSpeed * dice.timeLeft * dice.DoTranslateAxis.z * 0.001f; //definição da velocidade de translação
     }
     //se o tempo acabou, dado não está mais girando
     if(dice.dadoGirando && dice.timeLeft <= 0){
@@ -85,6 +95,76 @@ void Dices::eixoAlvoAleatorio(Dice &dice){
   dice.DoRotateAxis = {0, 0, 0};
   std::uniform_int_distribution<int> idist(0,2);
   dice.DoRotateAxis[idist(m_randomEngine)] = 1;
+}
+
+//função para definir um eixo de translação aleatório para cada dado, considerando a partir do eixo atual
+void Dices::direcaoAleatoria(Dice &dice){
+  //distribuição aleatória entre -1 e 1, para talvez andar cada um dos 3 eixos
+  dice.DoTranslateAxis = {0, 0, 0};
+  std::uniform_int_distribution<int> idist(-1,1);
+  dice.DoTranslateAxis = {idist(m_randomEngine),idist(m_randomEngine), idist(m_randomEngine)};
+  // dice.DoTranslateAxis.z = {idist(m_randomEngine)}; //somente z para debugar
+}
+
+//função identificar se o dado está em colisão com paredes ou outros dados
+void Dices::checkCollisions(Dice &dice){
+  bool colidiu{false}; //sensor que indica se foi detectada alguma colisão nesta checagem
+
+  //outros dados
+  //testa pra cada dado que não é o atual
+  for(auto &other_dice : dices) {
+    if(&other_dice == &dice) continue;
+
+    const auto distance{glm::distance(other_dice.position, dice.position)};
+
+    if (distance > 0.5f) continue;
+
+    if(!dice.dadoColidindo) {
+      dice.dadoColidindo = true;
+      dice.DoTranslateAxis *= -1;
+      colidiu = true;
+    }
+    //o outro dado vai precisar ter um efeito de ir para o lado contrário do dado atual
+    if(!other_dice.dadoColidindo) {
+      other_dice.dadoColidindo = true;
+      other_dice.DoTranslateAxis = dice.DoTranslateAxis * (-1);
+      tempoGirandoAleatorio(other_dice);
+      eixoAlvoAleatorio(other_dice);
+      other_dice.dadoGirando = true;
+    }
+  }
+  // caso não colidiu com nenhum outro dado, pode dizer que parou de colidir
+  if(!colidiu)
+  {
+    dice.dadoColidindo = false;
+  }
+  
+  //paredes
+  if(dice.position.x > 2.5f){
+    dice.DoTranslateAxis.x = -1;
+    colidiu = true;}
+  else if(dice.position.x < -2.5f){
+    dice.DoTranslateAxis.x = 1;
+    colidiu = true;}
+  if(dice.position.y > 2.5f){
+    dice.DoTranslateAxis.y = -1;
+    colidiu = true;}
+  else if(dice.position.y < -2.5f){
+    dice.DoTranslateAxis.y = 1;
+    colidiu = true;}
+  if(dice.position.z > 2.5f){
+    dice.DoTranslateAxis.z = -1;
+    colidiu = true;}
+  else if(dice.position.z < -2.5f){
+    dice.DoTranslateAxis.z = 1;
+    colidiu = true;}
+
+  if(colidiu){
+    //agora que foi corrigida a trajetória, vamos adicionar tempo girando para ele não parar colidindo
+    tempoGirandoAleatorio(dice);
+    //mudar o eixo também, pra dar um efeito mais realistico
+    eixoAlvoAleatorio(dice);
+  }
 }
 
 void Dices::computeNormals() {

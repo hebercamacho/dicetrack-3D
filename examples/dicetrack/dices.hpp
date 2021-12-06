@@ -32,7 +32,9 @@ struct Dice {
   float timeLeft{0.0f}; //indica por quanto tempo o dado ainda continuará girando
   float spinSpeed{1.0f}; //define um ângulo para definir a velocidade do giro do dado
   bool dadoGirando{false}; //indica se o dado deve estar girando 
+  bool dadoColidindo{false}; //indica se o dado está neste momento numa situação de colisão
   glm::ivec3 DoRotateAxis{}; //indica se deve ou não girar nos eixos X,Y,Z
+  glm::ivec3 DoTranslateAxis{}; //indica se deve ou não andar nos eixos X,Y,Z
 };
 
 class Dices {
@@ -66,6 +68,8 @@ class Dices {
   Dice inicializarDado();
   void tempoGirandoAleatorio(Dice&);
   void eixoAlvoAleatorio(Dice&);
+  void direcaoAleatoria(Dice&);
+  void checkCollisions(Dice&);
   void computeNormals();
   void createBuffers();
   void standardize();
